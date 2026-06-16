@@ -53,8 +53,8 @@ The distribution point (this repo + its GitHub Pages site) is what a download tr
 true:
 
 - [x] **2FA** enabled on the `KinCamBot` GitHub account (the top attack vector: account compromise).
-- [ ] **Branch protection** on the branch GitHub Pages serves from (block force-pushes and
-      deletions at minimum, so history cannot be silently rewritten).
+- [x] **Branch protection** on the branch GitHub Pages serves from (force-pushes and deletions
+      blocked, so history cannot be silently rewritten).
 - [ ] **Signed, annotated release tags** (`git tag -s vX.Y.Z`).
 - [x] On **every** release: regenerate the SHA-256 and update `CHECKSUMS.txt`.
 - [x] Tip / donation address published in a second location (the install page) so a future swap in
