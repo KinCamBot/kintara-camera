@@ -1,5 +1,5 @@
 KinCam release checksums (SHA-256)
 Verify a download with:  Get-FileHash <file> -Algorithm SHA256
 
-kincam.zip               22d8202bb5f7e044963f03daaeefe1322cb62b8e04f6b7f23f7f6b2391ed880b
-kintara-camera.user.js   7454f9029e2d3354d2e6ce595a9cd2d8bb92fc194eec07385e32b06a67e2e52a
+kincam.zip               7283ba0274effb014e754fdc0e2c4cf0def9a25cd904c68ffd967e6077e6c411
+kintara-camera.user.js   e533f50b86d35ef9fc17fb9466bcaad4f8ce7b23bc8beda429f1d7075d1827da
