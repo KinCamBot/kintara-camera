@@ -20,11 +20,7 @@ panel.
 - **Stays out of the way:** rests as a small "KinCam" pill in the corner; click it to expand. The
   toolbar icon shows, hides, or fully shuts down the tool.
 
-## Install
-
-Pick **one** (do not run both at once; they would both patch the game and collide).
-
-### Chrome / Edge / Brave extension (recommended)
+## Install (Chrome / Edge / Brave)
 
 1. Download **[kincam.zip](kincam.zip)** and unzip it (remember where the folder lands).
 2. Open `chrome://extensions` and turn on **Developer mode** (top-right toggle).
@@ -35,14 +31,15 @@ Pick **one** (do not run both at once; they would both patch the game and collid
 > Developer mode lets you load any unpacked extension, so only keep ones you trust. KinCam is not on
 > the Chrome Web Store yet, which is why this manual install is needed.
 
-### Userscript (Tampermonkey / Violentmonkey)
+## Review the source
 
-Install **[kintara-camera.user.js](kintara-camera.user.js)** in your userscript manager, then open
-kintara.gg/play. (Violentmonkey is open-source and tends to be the more reliable host.)
+The full extension source is committed in **[extension/](extension/)** (`manifest.json`,
+`content.js`, `rules.json`, `popup.html`, `popup.js`). The exact same files are packaged into
+`kincam.zip`. Read them before you run it.
 
 ## Verify your download
 
-Every released file's SHA-256 is in [CHECKSUMS.txt](CHECKSUMS.txt). Check before running:
+The SHA-256 of `kincam.zip` is in [CHECKSUMS.txt](CHECKSUMS.txt). Check before running:
 
 - Windows (PowerShell): `Get-FileHash kincam.zip -Algorithm SHA256`
 - macOS / Linux: `shasum -a 256 kincam.zip`
