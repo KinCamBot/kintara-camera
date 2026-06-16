@@ -173,14 +173,25 @@
         kintaraOrbit.lookHeight = (footY + H * lookFrac) - character.position.y;
         kintaraOrbitCamera.fov = sh.f0 + (sh.f1 - sh.f0) * lt;
       } else {
-        kintaraOrbit.azimuth += dt * Number(kintaraOrbit.autoSpeed || 0);
+        const spd = Number(kintaraOrbit.autoSpeed || 0);
+        // a crane rises more than it spins, so Rising reads as vertical, not just another orbit
+        const spinMul = (s === 'rise') ? 0.4 : 1;
+        kintaraOrbit.azimuth += dt * spd * spinMul;
         if (s === 'sweep') {
           kintaraOrbit.elevation = 0.55 + Math.sin(kintaraOrbit._t * 0.55) * 0.5;
           kintaraOrbit.radius = 8.5 + Math.sin(kintaraOrbit._t * 0.4) * 3.6;
         } else if (s === 'rise') {
-          kintaraOrbit.elevation = kintaraClamp(0.15 + kintaraOrbit._t * 0.035, KINTARA_ORBIT_LIMITS.minElev, KINTARA_ORBIT_LIMITS.maxElev);
+          // CRANE reveal: climb steeply and pull back, with only a slow drift around the hero.
+          // Distinct from Orbit (a flat horizontal circle at a fixed height/distance).
+          const baseE = (kintaraOrbit._baseE != null) ? kintaraOrbit._baseE : 0.2;
+          const baseR = (kintaraOrbit._baseR != null) ? kintaraOrbit._baseR : 9;
+          kintaraOrbit.elevation = kintaraClamp(baseE + kintaraOrbit._t * 0.14, KINTARA_ORBIT_LIMITS.minElev, 1.35);
+          kintaraOrbit.radius = kintaraClamp(baseR + kintaraOrbit._t * 1.3, KINTARA_ORBIT_LIMITS.minRadius, 45);
         } else if (s === 'pushin') {
-          kintaraOrbit.radius = kintaraClamp(11 - kintaraOrbit._t * 0.7, 2.4, 60);
+          // collapse the distance ~2.5x faster than before so we are all the way in within ~2-3
+          // orbits instead of ~5. Always start from a wide framing so there is room to push.
+          const baseR = Math.max(Number(kintaraOrbit._baseR) || 12, 12);
+          kintaraOrbit.radius = kintaraClamp(baseR - kintaraOrbit._t * 1.7, KINTARA_ORBIT_LIMITS.minRadius, 60);
         }
       }
     }
@@ -673,30 +684,41 @@
       return { mode: kintaraCameraMode, orbit: { ...kintaraOrbit } };
     };
     window.__kintaraAutoPan = function __kintaraAutoPan(config = {}) {
+      const prevStyle = kintaraOrbit.autoStyle;
+      const wasAutopan = (kintaraCameraMode === 'autopan');
       Object.assign(kintaraOrbit, config || {});
       kintaraCameraMode = 'autopan';
-      kintaraOrbit._t = 0;
-      kintaraOrbit._hypeTotal = 0;
-      kintaraOrbit._faceYaw = (character && character.rotation) ? character.rotation.y : 0;
-      // Measure the avatar's real bounding box so framing tracks the actual head/face
-      // height and overall size — this auto-adapts to mounts (taller subject).
-      try {
-        const _bb = new THREE.Box3(); const _tmp = new THREE.Box3(); const _dbg = [];
-        character.traverse(o => {
-          if (o && o.isMesh && o.geometry && o.visible !== false) {
-            _tmp.setFromObject(o);
-            if (isFinite(_tmp.min.y) && isFinite(_tmp.max.y) && _tmp.max.y > _tmp.min.y) {
-              _bb.union(_tmp);
-              _dbg.push({ n: String(o.name || o.type || '?').slice(0, 18), top: +(_tmp.max.y).toFixed(2), h: +(_tmp.max.y - _tmp.min.y).toFixed(2) });
+      const styleChanged = !!(config && config.autoStyle && config.autoStyle !== prevStyle);
+      // Only (re)start the shot when first entering auto-pan or switching styles. Live tweaks to
+      // speed/radius/elevation must adjust on the fly, not snap the camera back to the beginning.
+      if (!wasAutopan || styleChanged) {
+        kintaraOrbit._t = 0;
+        kintaraOrbit._hypeTotal = 0;
+        // remember where the shot started so Rising/Push-in can drive radius/elevation off a
+        // stable base instead of compounding the value they overwrite each frame.
+        kintaraOrbit._baseR = Number(kintaraOrbit.radius) || 9;
+        kintaraOrbit._baseE = isFinite(Number(kintaraOrbit.elevation)) ? Number(kintaraOrbit.elevation) : 0.55;
+        kintaraOrbit._faceYaw = (character && character.rotation) ? character.rotation.y : 0;
+        // Measure the avatar's real bounding box so framing tracks the actual head/face
+        // height and overall size — this auto-adapts to mounts (taller subject).
+        try {
+          const _bb = new THREE.Box3(); const _tmp = new THREE.Box3(); const _dbg = [];
+          character.traverse(o => {
+            if (o && o.isMesh && o.geometry && o.visible !== false) {
+              _tmp.setFromObject(o);
+              if (isFinite(_tmp.min.y) && isFinite(_tmp.max.y) && _tmp.max.y > _tmp.min.y) {
+                _bb.union(_tmp);
+                _dbg.push({ n: String(o.name || o.type || '?').slice(0, 18), top: +(_tmp.max.y).toFixed(2), h: +(_tmp.max.y - _tmp.min.y).toFixed(2) });
+              }
             }
-          }
-        });
-        if (_bb.isEmpty()) { kintaraOrbit._charH = 1.8; kintaraOrbit._charBaseY = character.position.y; }
-        else { kintaraOrbit._charH = Math.max(0.8, _bb.max.y - _bb.min.y); kintaraOrbit._charBaseY = _bb.min.y; }
-        kintaraOrbit._charDbg = _dbg.sort((a, b) => b.top - a.top).slice(0, 7);
-      } catch (_) { kintaraOrbit._charH = 1.8; kintaraOrbit._charBaseY = (character && character.position) ? character.position.y : 0; }
-      kintaraOrbit._initd = false;
-      kintaraOrbitInitFromAvatar();
+          });
+          if (_bb.isEmpty()) { kintaraOrbit._charH = 1.8; kintaraOrbit._charBaseY = character.position.y; }
+          else { kintaraOrbit._charH = Math.max(0.8, _bb.max.y - _bb.min.y); kintaraOrbit._charBaseY = _bb.min.y; }
+          kintaraOrbit._charDbg = _dbg.sort((a, b) => b.top - a.top).slice(0, 7);
+        } catch (_) { kintaraOrbit._charH = 1.8; kintaraOrbit._charBaseY = (character && character.position) ? character.position.y : 0; }
+        kintaraOrbit._initd = false;
+        kintaraOrbitInitFromAvatar();
+      }
       try { localStorage.setItem('kintara.cameraMode', kintaraCameraMode); } catch (_) {}
       kintaraInstallOrbitControls();
       kintaraSyncCrosshair();
@@ -913,7 +935,7 @@
     
       /* ---- theme (deep midnight glass + electric-blue glow) ------------------ */
       var CSS = ''
-      + '#kx{position:fixed;top:18px;right:18px;width:312px;z-index:2147483000;'
+      + '#kx{position:fixed;top:16px;right:16px;width:256px;z-index:2147483000;'
       +   'font-family:system-ui,Segoe UI,Roboto,sans-serif;color:#dfe8f6;'
       +   'background:linear-gradient(180deg,rgba(15,23,42,.92),rgba(9,14,28,.94));'
       +   'border:1px solid rgba(96,150,238,.22);border-radius:16px;'
@@ -933,7 +955,7 @@
       + '#kx .kx-ic{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;cursor:pointer;'
       +   'color:#9fb4d6;border:1px solid transparent;transition:.15s}'
       + '#kx .kx-ic:hover{background:rgba(90,140,230,.16);color:#dfe8f6;border-color:rgba(96,150,238,.25)}'
-      + '#kx .kx-bd{padding:4px 14px 14px;max-height:78vh;overflow-y:auto}'
+      + '#kx .kx-bd{padding:3px 12px 12px;max-height:76vh;overflow-y:auto}'
       + '#kx .kx-bd::-webkit-scrollbar{width:7px}#kx .kx-bd::-webkit-scrollbar-thumb{background:rgba(96,150,238,.3);border-radius:8px}'
       + '#kx.kx-collapsed .kx-bd{display:none}'
       + '#kx .kx-sec{margin-top:13px}'
@@ -1180,20 +1202,38 @@
     
       /* ---- header drag, collapse, hide -------------------------------------- */
       (function drag() {
+        hd.style.cursor = 'move';
         var ox, oy, dragging = false;
-        hd.addEventListener('mousedown', function (e) {
+        function clampSave() {
+          try { var r = root.getBoundingClientRect(); localStorage.setItem('kxPos', JSON.stringify({ left: r.left, top: r.top })); } catch (e) {}
+        }
+        // Pointer events + setPointerCapture: the header owns the drag for its whole duration, so it
+        // keeps tracking even over the game canvas (the old mouse-on-window version could lose it).
+        hd.addEventListener('pointerdown', function (e) {
           if (e.target.closest('.kx-ic')) return;
           dragging = true; var r = root.getBoundingClientRect();
-          ox = e.clientX - r.left; oy = e.clientY - r.top; root.style.right = 'auto'; e.preventDefault();
+          ox = e.clientX - r.left; oy = e.clientY - r.top;
+          root.style.right = 'auto'; root.style.left = r.left + 'px'; root.style.top = r.top + 'px';
+          try { hd.setPointerCapture(e.pointerId); } catch (_) {}
+          e.preventDefault();
         });
-        window.addEventListener('mousemove', function (e) {
+        hd.addEventListener('pointermove', function (e) {
           if (!dragging) return;
-          root.style.left = Math.max(4, Math.min(window.innerWidth - 80, e.clientX - ox)) + 'px';
+          root.style.left = Math.max(4, Math.min(window.innerWidth - 60, e.clientX - ox)) + 'px';
           root.style.top = Math.max(4, Math.min(window.innerHeight - 40, e.clientY - oy)) + 'px';
         });
-        // capture phase so the release fires even when it lands on the panel
-        // (the panel stops bubbling events, which used to swallow this and leave it stuck to the cursor)
-        window.addEventListener('mouseup', function () { dragging = false; }, true);
+        function end() { if (dragging) { dragging = false; clampSave(); } }
+        hd.addEventListener('pointerup', end);
+        hd.addEventListener('pointercancel', end);
+        // restore a position the user dragged to last time (default framing stays top-right)
+        try {
+          var sv = JSON.parse(localStorage.getItem('kxPos') || 'null');
+          if (sv && isFinite(sv.left) && isFinite(sv.top)) {
+            root.style.right = 'auto';
+            root.style.left = Math.max(4, Math.min(window.innerWidth - 60, sv.left)) + 'px';
+            root.style.top = Math.max(4, Math.min(window.innerHeight - 40, sv.top)) + 'px';
+          }
+        } catch (e) {}
       })();
       btnCollapse.addEventListener('click', function () { root.classList.toggle('kx-collapsed'); });
       function hidePanel(h) { root.classList.toggle('kx-hidden', h); tab.classList.toggle('show', h); }
