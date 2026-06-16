@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Kintara Cinematic Camera
-// @namespace    gg.kintara.camera
+// @name         KinCam Cinematic Camera
+// @namespace    gg.kincam.camera
 // @version      1.0.0
-// @description  First-person, free-cam photos, over-the-shoulder, and cinematic HYPE reels for Kintara — with an in-game control panel.
-// @author       Kintara Camera
+// @description  First-person, free-cam photos, over-the-shoulder, and cinematic HYPE reels for Kintara, with an in-game control panel.
+// @author       KinCam
 // @match        https://kintara.gg/*
 // @run-at       document-start
 // @grant        none
@@ -999,7 +999,7 @@
       root.appendChild(el('div', 'kx-top'));
     
       var hd = el('div', 'kx-hd');
-      hd.innerHTML = LOGO + '<div><div class=kx-ttl>KINTARA</div><div class=kx-sub>CINEMATIC CAMERA</div></div><div class=kx-hd-sp></div>';
+      hd.innerHTML = LOGO + '<div><div class=kx-ttl>KinCam</div><div class=kx-sub>CINEMATIC CAMERA</div></div><div class=kx-hd-sp></div>';
       var btnCollapse = el('div', 'kx-ic', '&#9776;'); btnCollapse.title = 'Collapse';
       var btnHide = el('div', 'kx-ic', eyeSvg()); btnHide.title = 'Hide panel (H)';
       hd.appendChild(btnCollapse); hd.appendChild(btnHide);
@@ -1043,7 +1043,7 @@
       root.appendChild(bd);
       document.body.appendChild(root);
     
-      var tab = el('div'); tab.id = 'kx-tab'; tab.innerHTML = LOGO + 'CAMERA';
+      var tab = el('div'); tab.id = 'kx-tab'; tab.innerHTML = LOGO + 'KinCam';
       document.body.appendChild(tab);
     
       // Stop panel interactions from reaching the game's click-to-move / world handlers.
