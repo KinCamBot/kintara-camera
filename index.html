@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kintara Cinematic Camera</title>
+<meta name="description" content="Cinematic camera modes, free-cam photos, and auto HYPE reels for Kintara. Free, open-source, runs only on kintara.gg.">
+<style>
+  :root{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;font:16px/1.6 system-ui,Segoe UI,Roboto,sans-serif;color:#dfe8f6;
+    background:radial-gradient(1200px 700px at 50% -10%,#16233f,#0a1018 60%);display:flex;justify-content:center;padding:48px 20px}
+  .wrap{width:100%;max-width:620px}
+  .logo{width:54px;height:54px;filter:drop-shadow(0 0 12px rgba(90,160,255,.6))}
+  h1{font-size:30px;margin:14px 0 4px;letter-spacing:.06em}
+  h1 b{background:linear-gradient(90deg,#cfe2ff,#7fb6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:#8aa0c0;margin:0 0 26px}
+  .card{background:linear-gradient(180deg,rgba(20,30,52,.6),rgba(12,18,32,.6));border:1px solid rgba(96,150,238,.18);
+    border-radius:16px;padding:22px;margin-bottom:16px}
+  .btn{display:inline-flex;align-items:center;gap:10px;width:100%;justify-content:center;cursor:pointer;text-decoration:none;
+    font:700 16px system-ui,sans-serif;letter-spacing:.04em;color:#fff;padding:15px;border-radius:12px;border:none;
+    background:linear-gradient(135deg,#3d7bff,#4fb6ff);box-shadow:0 8px 26px -6px rgba(70,140,255,.6);transition:.15s}
+  .btn:hover{filter:brightness(1.08)}
+  .step{color:#9fb0c8;font-size:14px;margin-top:12px}
+  .step a{color:#7fb6ff}
+  .lab{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7d93b6;margin:0 0 12px;font-weight:600}
+  ul{margin:0;padding-left:20px}li{margin:5px 0;color:#cdddf3}
+  .safe{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .safe div{font-size:13px;color:#b6c6df;background:rgba(13,20,36,.6);border:1px solid rgba(96,150,238,.14);border-radius:9px;padding:9px 11px}
+  .safe b{color:#7fd6a0}
+  .addr{font:13px ui-monospace,Menlo,Consolas,monospace;color:#9fc4ff;background:rgba(13,20,36,.85);
+    border:1px solid rgba(96,150,238,.2);border-radius:8px;padding:10px;word-break:break-all;text-align:center;margin-top:8px}
+  .foot{text-align:center;color:#6f86ab;font-size:12px;margin-top:8px}
+  .foot a{color:#8aa0c0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <svg class="logo" viewBox="0 0 24 24" fill="none">
+    <path d="M12 2.5 21 7.5v9L12 21.5 3 16.5v-9z" stroke="#5aa6ff" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M12 2.5 12 21.5M3 7.5l9 5 9-5" stroke="#7fc4ff" stroke-width="1.2" stroke-linejoin="round" opacity=".75"/>
+  </svg>
+  <h1><b>KINTARA</b> Cinematic Camera</h1>
+  <p class="tag">First-person, free-cam photos, over-the-shoulder, and one-click HYPE reels — right inside Kintara.</p>
+
+  <div class="card">
+    <a class="btn" id="install" href="kintara-camera.user.js">&#11015;&nbsp; Install</a>
+    <div class="step"><b>1.</b> Need <a href="https://www.tampermonkey.net" target="_blank" rel="noopener">Tampermonkey</a> first (free, one-time). <b>2.</b> Click Install above. <b>3.</b> Open <a href="https://kintara.gg/play" target="_blank" rel="noopener">kintara.gg/play</a> — the panel appears top-right.</div>
+  </div>
+
+  <div class="card">
+    <p class="lab">What it does</p>
+    <ul>
+      <li>First-person, Play, and Over-the-shoulder play cameras</li>
+      <li>Free Cam for photographing your character from any angle</li>
+      <li>Cinematic Auto-Pan moves + a 20s auto <b>HYPE</b> reel that records itself</li>
+      <li>Clean photo &amp; clip capture, hide-HUD toggles, crosshair toggle</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <p class="lab">Is it safe?</p>
+    <div class="safe">
+      <div><b>Open source</b> — read every line</div>
+      <div><b>Runs only</b> on kintara.gg</div>
+      <div><b>No data</b> collected or sent</div>
+      <div><b>No account</b> or wallet access</div>
+    </div>
+    <div class="step" style="margin-top:12px"><a href="kintara-camera.user.js" target="_blank">View the full source &#8594;</a></div>
+  </div>
+
+  <div class="card">
+    <p class="lab">Tip the dev &#9829;</p>
+    <p style="margin:0;font-size:14px;color:#cdddf3">Free to use — if it helps, any SOL or KINS is hugely appreciated. ty &lt;3</p>
+    <div class="addr">F1ULZxHK9PicLNp5Nk6DnS86Rk1Lc37rX6ex7XprACQf</div>
+  </div>
+
+  <p class="foot">Not affiliated with Kintara. A community fan tool.</p>
+</div>
+<script>
+  // make the Install button always point at the userscript next to this page
+  var a = document.getElementById('install');
+  a.href = new URL('kintara-camera.user.js', location.href).href;
+</script>
+</body>
+</html>
