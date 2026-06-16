@@ -23,6 +23,9 @@
   .btn:hover{filter:brightness(1.08)}
   .step{color:#9fb0c8;font-size:14px;margin-top:12px}
   .step a{color:#7fb6ff}
+  .steps{margin:14px 0 0;padding-left:20px;color:#bccbe2;font-size:14px}
+  .steps li{margin:8px 0}.steps a{color:#7fb6ff}
+  .steps .note{display:block;color:#7d93b6;font-size:12px;margin-top:3px}
   .lab{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7d93b6;margin:0 0 12px;font-weight:600}
   ul{margin:0;padding-left:20px}li{margin:5px 0;color:#cdddf3}
   .safe{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -45,7 +48,12 @@
 
   <div class="card">
     <a class="btn" id="install" href="kintara-camera.user.js">&#11015;&nbsp; Install</a>
-    <div class="step"><b>1.</b> Need <a href="https://www.tampermonkey.net" target="_blank" rel="noopener">Tampermonkey</a> first (free, one-time). <b>2.</b> Click Install above. <b>3.</b> Open <a href="https://kintara.gg/play" target="_blank" rel="noopener">kintara.gg/play</a> — the panel appears top-right.</div>
+    <ol class="steps">
+      <li>Install <a href="https://www.tampermonkey.net" target="_blank" rel="noopener">Tampermonkey</a> (free, one-time).</li>
+      <li><b>Chrome / Edge / Brave:</b> turn on user scripts — open your extensions page (e.g. <b>chrome://extensions</b>), click <b>Details</b> on Tampermonkey, and switch <b>“Allow user scripts”</b> on. If you don't see that toggle, turn on <b>Developer mode</b> (top-right) instead.<span class="note">Firefox users can skip this step.</span></li>
+      <li>Click <b>Install</b> above and confirm in Tampermonkey.</li>
+      <li>Open <a href="https://kintara.gg/play" target="_blank" rel="noopener">kintara.gg/play</a> — the panel appears top-right.</li>
+    </ol>
   </div>
 
   <div class="card">
