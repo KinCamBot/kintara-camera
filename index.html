@@ -23,16 +23,24 @@
   .btn:hover{filter:brightness(1.08)}
   .step{color:#9fb0c8;font-size:14px;margin-top:12px}
   .step a{color:#7fb6ff}
-  .steps{margin:14px 0 0;padding-left:20px;color:#bccbe2;font-size:14px}
-  .steps li{margin:8px 0}.steps a{color:#7fb6ff}
-  .steps .note{display:block;color:#7d93b6;font-size:12px;margin-top:3px}
+  .istep{display:flex;gap:12px;margin:16px 0}
+  .num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#3d7bff,#4fb6ff);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center;box-shadow:0 4px 12px -3px rgba(70,140,255,.6)}
+  .ibody{flex:1;font-size:14px;line-height:1.55;color:#cdddf3}
+  .ibody b{color:#fff}.ibody a:not(.btn):not(.btn2){color:#7fb6ff}
+  .shot{display:block;width:100%;max-width:300px;margin:11px 0}
+  .note{display:block;color:#7d93b6;font-size:12px;margin-top:7px}
+  .btn2{display:inline-flex;align-items:center;gap:7px;margin-top:10px;text-decoration:none;font:600 13px system-ui,sans-serif;color:#cfe2ff;background:rgba(34,48,74,.7);border:1px solid rgba(96,150,238,.3);border-radius:9px;padding:9px 13px;transition:.15s}
+  .btn2:hover{border-color:rgba(120,170,255,.6);color:#fff}
   .lab{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7d93b6;margin:0 0 12px;font-weight:600}
   ul{margin:0;padding-left:20px}li{margin:5px 0;color:#cdddf3}
   .safe{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .safe div{font-size:13px;color:#b6c6df;background:rgba(13,20,36,.6);border:1px solid rgba(96,150,238,.14);border-radius:9px;padding:9px 11px}
   .safe b{color:#7fd6a0}
-  .addr{font:13px ui-monospace,Menlo,Consolas,monospace;color:#9fc4ff;background:rgba(13,20,36,.85);
-    border:1px solid rgba(96,150,238,.2);border-radius:8px;padding:10px;word-break:break-all;text-align:center;margin-top:8px}
+  .addr{display:block;width:100%;font:13px ui-monospace,Menlo,Consolas,monospace;color:#9fc4ff;background:rgba(13,20,36,.85);
+    border:1px solid rgba(96,150,238,.2);border-radius:8px;padding:12px;word-break:break-all;text-align:center;margin-top:10px;cursor:pointer;transition:.15s}
+  .addr:hover{border-color:rgba(120,170,255,.55);background:rgba(20,30,52,.92);color:#cfe2ff}
+  .addr:active{transform:translateY(1px)}
+  .copyhint{text-align:center;font-size:11px;color:#7d93b6;margin-top:7px}
   .foot{text-align:center;color:#6f86ab;font-size:12px;margin-top:8px}
   .foot a{color:#8aa0c0}
 </style>
@@ -44,16 +52,58 @@
     <path d="M12 2.5 12 21.5M3 7.5l9 5 9-5" stroke="#7fc4ff" stroke-width="1.2" stroke-linejoin="round" opacity=".75"/>
   </svg>
   <h1><b>KINTARA</b> Cinematic Camera</h1>
-  <p class="tag">First-person, free-cam photos, over-the-shoulder, and one-click HYPE reels — right inside Kintara.</p>
+  <p class="tag">First-person, free-cam photos, over-the-shoulder, and one-click HYPE reels, right inside Kintara.</p>
 
   <div class="card">
-    <a class="btn" id="install" href="kintara-camera.user.js">&#11015;&nbsp; Install</a>
-    <ol class="steps">
-      <li>Install <a href="https://www.tampermonkey.net" target="_blank" rel="noopener">Tampermonkey</a> (free, one-time).</li>
-      <li><b>Chrome / Edge / Brave:</b> turn on user scripts — open your extensions page (e.g. <b>chrome://extensions</b>), click <b>Details</b> on Tampermonkey, and switch <b>“Allow user scripts”</b> on. If you don't see that toggle, turn on <b>Developer mode</b> (top-right) instead.<span class="note">Firefox users can skip this step.</span></li>
-      <li>Click <b>Install</b> above and confirm in Tampermonkey.</li>
-      <li>Open <a href="https://kintara.gg/play" target="_blank" rel="noopener">kintara.gg/play</a> — the panel appears top-right.</li>
-    </ol>
+    <p class="lab">How to install</p>
+
+    <div class="istep">
+      <div class="num">1</div>
+      <div class="ibody"><b>Get Tampermonkey</b>, a free browser extension (one-time setup). Install it from the official Chrome Web Store:
+        <a class="btn2" href="https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank" rel="noopener">Get Tampermonkey &#8594;</a>
+      </div>
+    </div>
+
+    <div class="istep">
+      <div class="num">2</div>
+      <div class="ibody"><b>Turn on user scripts.</b> Right-click the Tampermonkey icon in your toolbar and click <b>Manage extension</b>:
+        <svg class="shot" viewBox="0 0 300 196" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="206" height="180" rx="10" fill="#1b2433" stroke="#34425e"/>
+          <text x="24" y="34" fill="#dbe5f4" font-family="system-ui,sans-serif" font-size="13" font-weight="600">Tampermonkey</text>
+          <line x1="14" y1="48" x2="208" y2="48" stroke="#2a3346"/>
+          <text x="24" y="74" fill="#9fb0c8" font-family="system-ui,sans-serif" font-size="13">Options</text>
+          <text x="24" y="102" fill="#9fb0c8" font-family="system-ui,sans-serif" font-size="13">Remove from Chrome</text>
+          <rect x="12" y="114" width="198" height="28" rx="6" fill="#27456f"/>
+          <text x="24" y="133" fill="#ffffff" font-family="system-ui,sans-serif" font-size="13" font-weight="600">Manage extension</text>
+          <text x="24" y="164" fill="#9fb0c8" font-family="system-ui,sans-serif" font-size="13">View web permissions</text>
+          <line x1="296" y1="128" x2="234" y2="128" stroke="#5ad6ff" stroke-width="3" stroke-linecap="round"/>
+          <polygon points="218,128 235,120 235,136" fill="#5ad6ff"/>
+        </svg>
+        Then scroll down and switch <b>Allow User Scripts</b> on:
+        <svg class="shot" viewBox="0 0 300 96" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="10" width="206" height="76" rx="10" fill="#1b2433" stroke="#34425e"/>
+          <text x="24" y="40" fill="#ffffff" font-family="system-ui,sans-serif" font-size="13" font-weight="600">Allow User Scripts</text>
+          <text x="24" y="61" fill="#8aa0c0" font-family="system-ui,sans-serif" font-size="11">Run scripts not reviewed by Google</text>
+          <rect x="160" y="30" width="40" height="22" rx="11" fill="#3d7bff"/>
+          <circle cx="189" cy="41" r="8" fill="#ffffff"/>
+          <line x1="296" y1="41" x2="234" y2="41" stroke="#5ad6ff" stroke-width="3" stroke-linecap="round"/>
+          <polygon points="218,41 235,33 235,49" fill="#5ad6ff"/>
+        </svg>
+        <span class="note">Chrome, Edge and Brave only. Firefox users can skip this step.</span>
+      </div>
+    </div>
+
+    <div class="istep">
+      <div class="num">3</div>
+      <div class="ibody"><b>Install the camera mod.</b> Click below, then hit Install on the Tampermonkey tab that opens:
+        <a class="btn" id="install" href="kintara-camera.user.js">&#11015;&nbsp; Install Kintara Camera</a>
+      </div>
+    </div>
+
+    <div class="istep">
+      <div class="num">4</div>
+      <div class="ibody">Open <a href="https://kintara.gg/play" target="_blank" rel="noopener">kintara.gg/play</a> and log in. The <b>KINTARA</b> panel appears at the top-right. &#127909;</div>
+    </div>
   </div>
 
   <div class="card">
@@ -69,7 +119,7 @@
   <div class="card">
     <p class="lab">Is it safe?</p>
     <div class="safe">
-      <div><b>Open source</b> — read every line</div>
+      <div><b>Open source</b>, read every line</div>
       <div><b>Runs only</b> on kintara.gg</div>
       <div><b>No data</b> collected or sent</div>
       <div><b>No account</b> or wallet access</div>
@@ -79,8 +129,9 @@
 
   <div class="card">
     <p class="lab">Tip the dev &#9829;</p>
-    <p style="margin:0;font-size:14px;color:#cdddf3">Free to use — if it helps, any SOL or KINS is hugely appreciated. ty &lt;3</p>
-    <div class="addr">F1ULZxHK9PicLNp5Nk6DnS86Rk1Lc37rX6ex7XprACQf</div>
+    <p style="margin:0;font-size:14px;color:#cdddf3">Free to use! If you enjoy it, any KINS or SOL donations to the address below are greatly appreciated &lt;3</p>
+    <button class="addr" id="addr" type="button">F1ULZxHK9PicLNp5Nk6DnS86Rk1Lc37rX6ex7XprACQf</button>
+    <div class="copyhint" id="copyhint">click to copy</div>
   </div>
 
   <p class="foot">Not affiliated with Kintara. A community fan tool.</p>
@@ -89,6 +140,16 @@
   // make the Install button always point at the userscript next to this page
   var a = document.getElementById('install');
   a.href = new URL('kintara-camera.user.js', location.href).href;
+
+  // click-to-copy the tip address
+  var addrBtn = document.getElementById('addr');
+  if (addrBtn) addrBtn.addEventListener('click', function () {
+    var t = addrBtn.textContent.trim();
+    var hint = document.getElementById('copyhint');
+    function done() { if (hint) { hint.textContent = 'Copied!'; hint.style.color = '#7fd6a0'; setTimeout(function () { hint.textContent = 'click to copy'; hint.style.color = ''; }, 1500); } }
+    function fb() { try { var ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done(); } catch (e) {} }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, fb); else fb();
+  });
 </script>
 </body>
 </html>
