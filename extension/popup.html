@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  body{margin:0;width:232px;font:13px system-ui,Segoe UI,Roboto,sans-serif;color:#dfe8f6;background:linear-gradient(180deg,#101a2e,#0a1018);padding:14px}
+  .hd{display:flex;align-items:center;gap:9px;margin-bottom:13px}
+  .hd img{width:26px;height:26px;flex:0 0 auto;border-radius:6px;filter:drop-shadow(0 0 5px rgba(90,160,255,.55))}
+  .ttl{font-weight:700;font-size:13px;letter-spacing:.12em;color:#cfe2ff}
+  .sub{font-size:10px;color:#6f86ab;letter-spacing:.05em}
+  button{width:100%;padding:12px;border:none;border-radius:10px;cursor:pointer;font:600 13px system-ui,sans-serif;letter-spacing:.03em;color:#fff;background:linear-gradient(135deg,#3d7bff,#4fb6ff);box-shadow:0 6px 18px -6px rgba(70,140,255,.6);transition:.15s}
+  button:hover{filter:brightness(1.08)}button.off{background:rgba(55,75,115,.55);box-shadow:none}
+  button:disabled{opacity:.55;cursor:default;filter:none}
+  .note{font-size:11px;color:#7d93b6;text-align:center;margin-top:10px}
+  .shut{margin-top:12px;padding:9px;font-weight:600;font-size:12px;color:#ffb4b4;background:rgba(70,28,34,.5);border:1px solid rgba(255,90,90,.28);box-shadow:none}
+  .shut:hover{background:rgba(92,32,40,.72);filter:none}
+  .warn{margin-top:11px;font-size:11.5px;line-height:1.45;color:#ffd6d6;background:rgba(60,22,28,.55);border:1px solid rgba(255,90,90,.25);border-radius:9px;padding:10px}
+  .crow{display:flex;gap:7px;margin-top:8px}
+  .crow button{padding:9px;font-size:12px}
+  .danger{background:linear-gradient(135deg,#e0524f,#ff7a5a);box-shadow:0 6px 16px -6px rgba(220,70,70,.55)}
+  .ghost{background:rgba(55,75,115,.5);box-shadow:none}
+</style></head><body>
+  <div class="hd">
+    <img src="icon48.png" alt="">
+    <div><div class="ttl">KINCAM</div><div class="sub">CINEMATIC CAMERA</div></div>
+  </div>
+  <button id="toggle">Loading&hellip;</button>
+  <div class="note" id="note"></div>
+  <button id="shutdown" class="shut">Shut down KinCam</button>
+  <div id="confirm" style="display:none">
+    <div class="warn">Shut down KinCam? To reactivate, you'll have to <b>restart the game</b> (you may have to wait in the queue again).</div>
+    <div class="crow"><button id="cyes" class="danger">Shut down</button><button id="cno" class="ghost">Cancel</button></div>
+  </div>
+  <script src="popup.js"></script>
+</body></html>
