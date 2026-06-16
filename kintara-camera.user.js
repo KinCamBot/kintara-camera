@@ -996,12 +996,13 @@
       + '#kx .kx-stat{flex:1;font-size:11px;color:#8aa0c0}'
       + '#kx .kx-stat b{color:#7fb6ff;font-weight:600}'
       + '#kx .kx-kbd{font-size:10px;color:#6f86ab;border:1px solid rgba(96,150,238,.22);border-radius:5px;padding:2px 6px;background:rgba(20,30,50,.6)}'
-      + '#kx-tab{position:fixed;top:18px;right:18px;z-index:2147483000;cursor:pointer;display:none;'
-      +   'align-items:center;gap:7px;padding:8px 12px;border-radius:11px;font:600 12px system-ui,Segoe UI,Roboto,sans-serif;letter-spacing:.1em;'
+      + '#kx-tab{position:fixed;top:16px;right:16px;z-index:2147483000;cursor:pointer;display:none;'
+      +   'align-items:center;gap:6px;padding:6px 10px;border-radius:10px;font:600 11px system-ui,Segoe UI,Roboto,sans-serif;letter-spacing:.12em;'
       +   'color:#cfe2ff;background:linear-gradient(180deg,rgba(15,23,42,.92),rgba(9,14,28,.94));'
       +   'border:1px solid rgba(96,150,238,.28);box-shadow:0 8px 30px -8px rgba(0,0,0,.7);'
       +   'backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}'
       + '#kx-tab.show{display:flex}#kx-tab:hover{border-color:rgba(120,170,255,.5)}'
+      + '#kx-tab .kx-logo{width:15px;height:15px;border-radius:4px;filter:none}'
       + '#kx .kx-actrow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}'
       + '#kx .kx-hype{width:100%;padding:12px;border:none;border-radius:12px;cursor:pointer;font:700 13px system-ui,Segoe UI,Roboto,sans-serif;letter-spacing:.09em;color:#fff;'
       +   'background:linear-gradient(135deg,#ff7a3d,#ff4d8d 55%,#a45cff);box-shadow:0 6px 24px -4px rgba(255,90,140,.6),0 0 0 1px rgba(255,205,175,.3) inset;transition:.15s}'
@@ -1236,7 +1237,7 @@
         } catch (e) {}
       })();
       btnCollapse.addEventListener('click', function () { root.classList.toggle('kx-collapsed'); });
-      function hidePanel(h) { root.classList.toggle('kx-hidden', h); tab.classList.toggle('show', h); }
+      function hidePanel(h) { root.classList.toggle('kx-hidden', h); tab.classList.toggle('show', h); try { localStorage.setItem('kxMin', h ? '1' : '0'); } catch (e) {} }
       // Toolbar-icon (extension popup) on/off hooks: fully hide BOTH the panel and its tab, and
       // remember the choice so it stays that way across reloads until shown again.
       window.__kxPanelShow = function () { try { localStorage.removeItem('kxHidden'); } catch (e) {} root.style.display = ''; tab.style.display = ''; root.classList.remove('kx-hidden'); };
@@ -1251,7 +1252,12 @@
         window.__kxDead = true;
         [root, tab, recBadge, toastEl, style].forEach(function (n) { try { if (n && n.parentNode) n.parentNode.removeChild(n); } catch (e) {} });
       };
-      try { if (localStorage.getItem('kxHidden') === '1') { root.style.display = 'none'; tab.style.display = 'none'; } } catch (e) {}
+      // Default resting state is the small "KinCam" pill in the corner, NOT the full panel. Click the
+      // pill to expand; the choice is remembered (kxMin). kxHidden = fully off via the toolbar popup.
+      try {
+        if (localStorage.getItem('kxHidden') === '1') { root.style.display = 'none'; tab.style.display = 'none'; }
+        else if (localStorage.getItem('kxMin') !== '0') { root.classList.add('kx-hidden'); tab.classList.add('show'); }
+      } catch (e) {}
       btnHide.addEventListener('click', function () { hidePanel(true); });
       // (The old X "shut down" button was removed — use the KinCam toolbar icon to show/hide.)
       tab.addEventListener('click', function () { hidePanel(false); });
