@@ -930,7 +930,6 @@
       + '#kx .kx-ic{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;cursor:pointer;'
       +   'color:#9fb4d6;border:1px solid transparent;transition:.15s}'
       + '#kx .kx-ic:hover{background:rgba(90,140,230,.16);color:#dfe8f6;border-color:rgba(96,150,238,.25)}'
-      + '#kx .kx-close:hover{background:rgba(255,90,90,.18);color:#ff8d8d;border-color:rgba(255,90,90,.3)}'
       + '#kx .kx-bd{padding:4px 14px 14px;max-height:78vh;overflow-y:auto}'
       + '#kx .kx-bd::-webkit-scrollbar{width:7px}#kx .kx-bd::-webkit-scrollbar-thumb{background:rgba(96,150,238,.3);border-radius:8px}'
       + '#kx.kx-collapsed .kx-bd{display:none}'
@@ -1025,8 +1024,7 @@
       hd.innerHTML = LOGO + '<div><div class=kx-ttl>KinCam</div><div class=kx-sub>CINEMATIC CAMERA</div></div><div class=kx-hd-sp></div>';
       var btnCollapse = el('div', 'kx-ic', '&#9776;'); btnCollapse.title = 'Collapse';
       var btnHide = el('div', 'kx-ic', eyeSvg()); btnHide.title = 'Hide to tab (H)';
-      var btnClose = el('div', 'kx-ic kx-close', '&#10005;'); btnClose.title = 'Shut down (back to normal game)';
-      hd.appendChild(btnCollapse); hd.appendChild(btnHide); hd.appendChild(btnClose);
+      hd.appendChild(btnCollapse); hd.appendChild(btnHide);
       root.appendChild(hd);
     
       var bd = el('div', 'kx-bd');
@@ -1092,7 +1090,7 @@
           + '<span class=kx-v id=kxv_' + id + '>' + fmt(val, step < 0.01 ? 3 : 2) + '</span></div>';
       }
       function eyeSvg() {
-        return '<svg width=15 height=15 viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.7><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx=12 cy=12 r=2.6/></svg>';
+        return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.6"/></svg>';
       }
     
       /* ---- wiring ------------------------------------------------------------ */
@@ -1203,14 +1201,7 @@
       window.__kxPanelVisible = function () { return root.style.display !== 'none'; };
       try { if (localStorage.getItem('kxHidden') === '1') { root.style.display = 'none'; tab.style.display = 'none'; } } catch (e) {}
       btnHide.addEventListener('click', function () { hidePanel(true); });
-      // shut it down: hand the game back its normal camera and HIDE the panel (does not destroy
-      // it, so the toolbar "Show KinCam" button can always bring it back).
-      function shutdownPanel() {
-        try { call('__kintaraCameraMode', 'iso'); } catch (e) {}
-        if (typeof window.__kxPanelHide === 'function') window.__kxPanelHide();
-        else { root.style.display = 'none'; tab.style.display = 'none'; }
-      }
-      btnClose.addEventListener('click', shutdownPanel);
+      // (The old X "shut down" button was removed — use the KinCam toolbar icon to show/hide.)
       tab.addEventListener('click', function () { hidePanel(false); });
       window.addEventListener('keydown', function (e) {
         if (e.key === 'h' || e.key === 'H') {
