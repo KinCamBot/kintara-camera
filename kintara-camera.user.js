@@ -808,7 +808,10 @@
   }
   function injectBlob(out) {
     var blob = new Blob([out], { type: 'text/javascript' });
-    var s = document.createElement('script'); s.type = 'module'; s.src = URL.createObjectURL(blob);
+    var url = URL.createObjectURL(blob);
+    var s = document.createElement('script'); s.type = 'module'; s.src = url;
+    // free the object URL once the module has loaded (or failed) so it does not leak
+    s.onload = s.onerror = function () { try { URL.revokeObjectURL(url); } catch (e) {} };
     document.head.appendChild(s);
     whenReady();
   }
