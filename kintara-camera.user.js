@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name         KinCam Cinematic Camera
 // @namespace    gg.kincam.camera
-// @version      1.0.0
+// @version      1.1.0
 // @description  First-person, free-cam photos, over-the-shoulder, and cinematic HYPE reels for Kintara, with an in-game control panel.
 // @author       KinCam
 // @match        https://kintara.gg/*
 // @run-at       document-start
 // @grant        none
+// @downloadURL  https://kincambot.github.io/kintara-camera/kintara-camera.user.js
+// @updateURL    https://kincambot.github.io/kintara-camera/kintara-camera.user.js
 // ==/UserScript==
 (function () {
   'use strict';
@@ -804,16 +806,39 @@
   function loadOriginal(url) {
     var s = document.createElement('script'); s.type = 'module'; s.src = url; document.head.appendChild(s);
   }
+  function injectBlob(out) {
+    var blob = new Blob([out], { type: 'text/javascript' });
+    var s = document.createElement('script'); s.type = 'module'; s.src = URL.createObjectURL(blob);
+    document.head.appendChild(s);
+    whenReady();
+  }
+  // If our block lost the timing race, the original game code runs on its own and draws
+  // a large canvas. In that case we must NOT also inject our patched copy, or the game
+  // double-loads (another-tab warning + WebGL crash). So we wait for load, then only
+  // inject when the game has NOT already rendered. Worst case: no camera this load, but
+  // the game itself never breaks.
+  function gameAlreadyRendered() {
+    var big = false;
+    document.querySelectorAll('canvas').forEach(function (c) { if (c.width >= 400 && c.height >= 300) big = true; });
+    return big;
+  }
   function loadPatched(url) {
     fetch(url, { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (code) {
-      var out;
+      var out = null;
       try { out = absolutizeImports(patchGameSource(code)); }
-      catch (e) { console.warn('[Kintara Camera] patch skipped (' + e.message + '), loading game normally.'); loadOriginal(url); return; }
-      var blob = new Blob([out], { type: 'text/javascript' });
-      var s = document.createElement('script'); s.type = 'module'; s.src = URL.createObjectURL(blob);
-      document.head.appendChild(s);
-      whenReady();
-    }).catch(function (e) { console.warn('[Kintara Camera] fetch failed (' + e.message + '), loading game normally.'); loadOriginal(url); });
+      catch (e) { console.warn('[KinCam] patch skipped (' + e.message + ')'); }
+      function decide() {
+        setTimeout(function () {
+          if (gameAlreadyRendered()) { console.warn('[KinCam] game loaded before KinCam could patch it; skipping to avoid a double-load. Refresh to enable the camera.'); return; }
+          if (out) injectBlob(out); else loadOriginal(url);
+        }, 350);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', decide); else decide();
+    }).catch(function (e) {
+      console.warn('[KinCam] fetch failed (' + e.message + ')');
+      function d() { if (!gameAlreadyRendered()) loadOriginal(url); }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', d); else d();
+    });
   }
   function tryHandle(node) {
     if (handled || !node || node.tagName !== 'SCRIPT') return;
