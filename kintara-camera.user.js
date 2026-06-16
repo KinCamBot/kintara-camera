@@ -935,13 +935,13 @@
     
       /* ---- theme (deep midnight glass + electric-blue glow) ------------------ */
       var CSS = ''
-      + '#kx{position:fixed;top:16px;right:16px;width:256px;z-index:2147483000;'
+      + '#kx{position:fixed;top:16px;right:16px;width:228px;z-index:2147483000;'
       +   'font-family:system-ui,Segoe UI,Roboto,sans-serif;color:#dfe8f6;'
       +   'background:linear-gradient(180deg,rgba(15,23,42,.92),rgba(9,14,28,.94));'
       +   'border:1px solid rgba(96,150,238,.22);border-radius:16px;'
       +   'box-shadow:0 18px 60px -12px rgba(0,0,0,.7),0 0 0 1px rgba(120,170,255,.05) inset,0 0 40px -18px rgba(70,140,255,.5);'
       +   'backdrop-filter:blur(16px) saturate(135%);-webkit-backdrop-filter:blur(16px) saturate(135%);'
-      +   'overflow:hidden;user-select:none;font-size:13px;transition:opacity .18s,transform .18s}'
+      +   'overflow:hidden;user-select:none;font-size:12px;transition:opacity .18s,transform .18s}'
       + '#kx.kx-hidden{opacity:0;transform:translateY(-8px) scale(.98);pointer-events:none}'
       + '#kx .kx-top{position:absolute;inset:0 0 auto 0;height:2px;'
       +   'background:linear-gradient(90deg,transparent,#4d8bff,#5ad6ff,transparent)}'
@@ -958,7 +958,7 @@
       + '#kx .kx-bd{padding:3px 12px 12px;max-height:76vh;overflow-y:auto}'
       + '#kx .kx-bd::-webkit-scrollbar{width:7px}#kx .kx-bd::-webkit-scrollbar-thumb{background:rgba(96,150,238,.3);border-radius:8px}'
       + '#kx.kx-collapsed .kx-bd{display:none}'
-      + '#kx .kx-sec{margin-top:13px}'
+      + '#kx .kx-sec{margin-top:9px}'
       + '#kx .kx-lab{display:flex;align-items:center;gap:7px;font-family:system-ui,Segoe UI,Roboto,sans-serif;font-size:10px;font-weight:600;'
       +   'letter-spacing:.13em;text-transform:uppercase;color:#7d93b6;margin:0 0 8px}'
       + '#kx .kx-lab .kx-dot{width:5px;height:5px;border-radius:50%;background:#4d8bff;box-shadow:0 0 8px #4d8bff}'
@@ -1020,7 +1020,7 @@
       + '#kx-rec.show{display:flex}'
       + '#kx-rec .dot{width:9px;height:9px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 10px #ff4d4d;animation:kxpulse 1s infinite}'
       + '@keyframes kxpulse{0%,100%{opacity:1}50%{opacity:.3}}'
-      + '#kx .kx-acc{border:1px solid rgba(96,150,238,.14);border-radius:12px;margin-top:9px;overflow:hidden;background:rgba(20,30,52,.32)}'
+      + '#kx .kx-acc{border:1px solid rgba(96,150,238,.14);border-radius:12px;margin-top:7px;overflow:hidden;background:rgba(20,30,52,.32)}'
       + '#kx .kx-acc-h{display:flex;align-items:center;gap:9px;padding:11px 12px;cursor:pointer;font-family:system-ui,Segoe UI,Roboto,sans-serif;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#c4d3ea;transition:.15s}'
       + '#kx .kx-acc-h:hover{background:rgba(60,90,150,.18);color:#fff}'
       + '#kx .kx-acc-dot{width:6px;height:6px;border-radius:50%;background:#4d8bff;box-shadow:0 0 8px #4d8bff;flex:0 0 auto}'
@@ -1242,6 +1242,15 @@
       window.__kxPanelShow = function () { try { localStorage.removeItem('kxHidden'); } catch (e) {} root.style.display = ''; tab.style.display = ''; root.classList.remove('kx-hidden'); };
       window.__kxPanelHide = function () { try { localStorage.setItem('kxHidden', '1'); } catch (e) {} root.style.display = 'none'; tab.style.display = 'none'; };
       window.__kxPanelVisible = function () { return root.style.display !== 'none'; };
+      // Full shut-down (from the toolbar popup): hand the game back its normal camera, stop any
+      // recording, and remove every piece of KinCam UI. This truly turns the mod off — re-enabling
+      // it requires reloading the game (which re-injects the engine), hence the popup's warning.
+      window.__kxShutdown = function () {
+        try { stopRec(); } catch (e) {}
+        try { if (typeof window.__kintaraCameraMode === 'function') window.__kintaraCameraMode('iso'); } catch (e) {}
+        window.__kxDead = true;
+        [root, tab, recBadge, toastEl, style].forEach(function (n) { try { if (n && n.parentNode) n.parentNode.removeChild(n); } catch (e) {} });
+      };
       try { if (localStorage.getItem('kxHidden') === '1') { root.style.display = 'none'; tab.style.display = 'none'; } } catch (e) {}
       btnHide.addEventListener('click', function () { hidePanel(true); });
       // (The old X "shut down" button was removed — use the KinCam toolbar icon to show/hide.)
@@ -1267,6 +1276,26 @@
       document.body.appendChild(recBadge);
     
       function gameCanvas() { var best = null, area = 0; Array.prototype.forEach.call(document.querySelectorAll('canvas'), function (c) { var a = c.width * c.height; if (a > area) { area = a; best = c; } }); return best; }
+      // The weather (e.g. Frostmere snow) is CSS/DOM, not part of the WebGL canvas, so canvas
+      // captures miss it. Paint the live snowflakes onto the capture so stills/clips match the screen.
+      function drawSnowOverlay(ctx, sx, sy) {
+        try {
+          var snow = document.getElementById('frostmere-css-snow') || document.querySelector('[id*="snow"]:not(#kx):not(#kx-tab)');
+          if (!snow || !snow.children || !snow.children.length) return;
+          var vw = window.innerWidth, vh = window.innerHeight;
+          ctx.save(); ctx.fillStyle = '#ffffff';
+          for (var i = 0; i < snow.children.length; i++) {
+            var f = snow.children[i]; var r = f.getBoundingClientRect();
+            if (r.width <= 0 || r.right < 0 || r.bottom < 0 || r.left > vw || r.top > vh) continue;
+            var op = parseFloat(getComputedStyle(f).opacity); if (!isFinite(op)) op = 0.8;
+            ctx.globalAlpha = Math.max(0.05, Math.min(1, op));
+            ctx.beginPath();
+            ctx.arc((r.left + r.width / 2) * sx, (r.top + r.height / 2) * sy, Math.max(0.8, (r.width * sx) / 2), 0, 6.2832);
+            ctx.fill();
+          }
+          ctx.restore();
+        } catch (e) {}
+      }
       function pad(n) { return (n < 10 ? '0' : '') + n; }
       function stamp() { var d = new Date(); return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()); }
       function download(blob, name) { var u = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); URL.revokeObjectURL(u); }, 1500); }
@@ -1280,7 +1309,9 @@
           if (window.ImageCapture && track) {
             new ImageCapture(track).grabFrame().then(function (bmp) {
               var off = document.createElement('canvas'); off.width = bmp.width; off.height = bmp.height;
-              off.getContext('2d').drawImage(bmp, 0, 0); off.toBlob(function (b) { finish(b); track.stop(); }, 'image/png');
+              var octx = off.getContext('2d'); octx.drawImage(bmp, 0, 0);
+              drawSnowOverlay(octx, bmp.width / window.innerWidth, bmp.height / window.innerHeight);
+              off.toBlob(function (b) { finish(b); track.stop(); }, 'image/png');
             }).catch(function () { try { c.toBlob(function (b) { finish(b); track.stop(); }, 'image/png'); } catch (e) { toast('Capture failed'); } });
           } else { c.toBlob(function (b) { finish(b); if (track) track.stop(); }, 'image/png'); }
         } catch (e) { toast('Capture not supported here'); }
@@ -1288,15 +1319,49 @@
     
       /* ---- clip recorder ----------------------------------------------------- */
       var rec = null, recChunks = [], recStart = 0, recTick = null;
+      var recSrc = null, recVid = null, recRAF = 0, recComp = false;
       function recActive() { return rec && rec.state !== 'inactive'; }
+      function stopComposite() {
+        recComp = false;
+        if (recRAF) { cancelAnimationFrame(recRAF); recRAF = 0; }
+        try { if (recSrc) recSrc.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+        try { if (recVid) { recVid.pause(); recVid.srcObject = null; } } catch (e) {}
+        recSrc = null; recVid = null;
+      }
       function startRec(silent) {
         if (recActive()) return true;
         var c = gameCanvas(); if (!c) { toast('No game canvas found'); return false; }
-        var stream; try { stream = c.captureStream(60); } catch (e) { toast('Recording not supported'); return false; }
+        var recStream;
+        // Composite the CSS snow (and any DOM weather) into the clip: pipe the game canvas into a
+        // <video>, redraw it + the snowflakes onto an offscreen canvas each frame, and record THAT.
+        // drawImage(gameCanvas) is blank (no preserveDrawingBuffer), but drawImage(video) works.
+        try {
+          recSrc = c.captureStream(60);
+          recVid = document.createElement('video'); recVid.muted = true; recVid.playsInline = true; recVid.srcObject = recSrc;
+          var comp = document.createElement('canvas'); comp.width = c.width; comp.height = c.height;
+          var cctx = comp.getContext('2d', { alpha: false });
+          recComp = true;
+          recVid.play().catch(function () {});
+          (function pump() {
+            if (!recComp) return;
+            recRAF = requestAnimationFrame(pump);
+            try {
+              if (recVid && recVid.readyState >= 2) {
+                cctx.drawImage(recVid, 0, 0, comp.width, comp.height);
+                drawSnowOverlay(cctx, comp.width / window.innerWidth, comp.height / window.innerHeight);
+              }
+            } catch (e) {}
+          })();
+          recStream = comp.captureStream(60);
+        } catch (e) {
+          // compositing unavailable -> record the raw canvas (no snow, but recording still works)
+          stopComposite();
+          try { recStream = c.captureStream(60); } catch (e2) { toast('Recording not supported'); return false; }
+        }
         var mime = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].filter(function (m) { return window.MediaRecorder && MediaRecorder.isTypeSupported(m); })[0] || 'video/webm';
-        try { rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 12000000 }); } catch (e) { toast('Recorder unavailable'); return false; }
+        try { rec = new MediaRecorder(recStream, { mimeType: mime, videoBitsPerSecond: 12000000 }); } catch (e) { stopComposite(); toast('Recorder unavailable'); return false; }
         recChunks = []; rec.ondataavailable = function (e) { if (e.data && e.data.size) recChunks.push(e.data); };
-        rec.onstop = function () { var b = new Blob(recChunks, { type: 'video/webm' }); download(b, 'kintara-clip-' + stamp() + '.webm'); if (!silent) toast('Clip saved ✓'); };
+        rec.onstop = function () { var b = new Blob(recChunks, { type: 'video/webm' }); download(b, 'kintara-clip-' + stamp() + '.webm'); stopComposite(); if (!silent) toast('Clip saved ✓'); };
         rec.start(120); recStart = Date.now();
         recBadge.classList.add('show');
         var rb = Q('#kx-rec-btn'); if (rb) { rb.classList.add('kx-rec-on'); rb.innerHTML = '&#9209;&#65039; Stop'; }
@@ -1305,7 +1370,7 @@
         return true;
       }
       function stopRec() {
-        if (recActive()) { try { rec.stop(); } catch (e) {} }
+        if (recActive()) { try { rec.stop(); } catch (e) {} } else { stopComposite(); }
         clearInterval(recTick); recBadge.classList.remove('show');
         var rb = Q('#kx-rec-btn'); if (rb) { rb.classList.remove('kx-rec-on'); rb.innerHTML = '&#9210; Record clip'; }
       }
