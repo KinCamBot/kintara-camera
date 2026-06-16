@@ -1,5 +1,6 @@
 KinCam release checksums (SHA-256)
-Verify a download with:  Get-FileHash <file> -Algorithm SHA256
+Verify a download before running it:
+  Windows (PowerShell):  Get-FileHash kincam.zip -Algorithm SHA256
+  macOS / Linux:         shasum -a 256 kincam.zip
 
-kincam.zip               9cfdb244c134f89abc4271b605cac3bdf7b18826137d1f5f23e9cf097828ab08
-kintara-camera.user.js   9a7011c7124419cf3b3b0679df78046aec5b3775010f7adac7f3e463dcb77191
+kincam.zip   9cfdb244c134f89abc4271b605cac3bdf7b18826137d1f5f23e9cf097828ab08
