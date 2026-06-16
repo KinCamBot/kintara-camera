@@ -1,0 +1,5 @@
+# Force LF on text sources so the published SHA-256 checksums in CHECKSUMS.txt are
+# reproducible regardless of the cloner's platform or core.autocrlf setting.
+* text=auto eol=lf
+*.png binary
+*.zip binary
