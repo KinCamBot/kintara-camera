@@ -905,6 +905,7 @@
       + '#kx .kx-ic{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;cursor:pointer;'
       +   'color:#9fb4d6;border:1px solid transparent;transition:.15s}'
       + '#kx .kx-ic:hover{background:rgba(90,140,230,.16);color:#dfe8f6;border-color:rgba(96,150,238,.25)}'
+      + '#kx .kx-close:hover{background:rgba(255,90,90,.18);color:#ff8d8d;border-color:rgba(255,90,90,.3)}'
       + '#kx .kx-bd{padding:4px 14px 14px;max-height:78vh;overflow-y:auto}'
       + '#kx .kx-bd::-webkit-scrollbar{width:7px}#kx .kx-bd::-webkit-scrollbar-thumb{background:rgba(96,150,238,.3);border-radius:8px}'
       + '#kx.kx-collapsed .kx-bd{display:none}'
@@ -988,8 +989,10 @@
       + '#kx .kx-tipaddr{font:11px ui-monospace,Menlo,Consolas,monospace;color:#9fc4ff;background:rgba(13,20,36,.85);border:1px solid rgba(96,150,238,.2);border-radius:8px;padding:8px;word-break:break-all;text-align:center;line-height:1.4}';
     
       var LOGO = '<svg class=kx-logo viewBox="0 0 24 24" fill="none">'
-        + '<path d="M12 2.5 21 7.5v9L12 21.5 3 16.5v-9z" stroke="#5aa6ff" stroke-width="1.4" stroke-linejoin="round"/>'
-        + '<path d="M12 2.5 12 21.5M3 7.5l9 5 9-5" stroke="#7fc4ff" stroke-width="1.2" stroke-linejoin="round" opacity=".75"/>'
+        + '<rect x="2.5" y="7" width="19" height="12.8" rx="3.2" stroke="#5aa6ff" stroke-width="1.5"/>'
+        + '<path d="M8 7l1.5-2.6h5L16 7" stroke="#5aa6ff" stroke-width="1.5" stroke-linejoin="round"/>'
+        + '<circle cx="12" cy="13.4" r="3.5" stroke="#7fc4ff" stroke-width="1.5"/>'
+        + '<circle cx="17.8" cy="10.4" r=".95" fill="#7fc4ff"/>'
         + '</svg>';
     
       /* ---- build DOM --------------------------------------------------------- */
@@ -1001,8 +1004,9 @@
       var hd = el('div', 'kx-hd');
       hd.innerHTML = LOGO + '<div><div class=kx-ttl>KinCam</div><div class=kx-sub>CINEMATIC CAMERA</div></div><div class=kx-hd-sp></div>';
       var btnCollapse = el('div', 'kx-ic', '&#9776;'); btnCollapse.title = 'Collapse';
-      var btnHide = el('div', 'kx-ic', eyeSvg()); btnHide.title = 'Hide panel (H)';
-      hd.appendChild(btnCollapse); hd.appendChild(btnHide);
+      var btnHide = el('div', 'kx-ic', eyeSvg()); btnHide.title = 'Hide to tab (H)';
+      var btnClose = el('div', 'kx-ic kx-close', '&#10005;'); btnClose.title = 'Shut down (back to normal game)';
+      hd.appendChild(btnCollapse); hd.appendChild(btnHide); hd.appendChild(btnClose);
       root.appendChild(hd);
     
       var bd = el('div', 'kx-bd');
@@ -1166,11 +1170,20 @@
           root.style.left = Math.max(4, Math.min(window.innerWidth - 80, e.clientX - ox)) + 'px';
           root.style.top = Math.max(4, Math.min(window.innerHeight - 40, e.clientY - oy)) + 'px';
         });
-        window.addEventListener('mouseup', function () { dragging = false; });
+        // capture phase so the release fires even when it lands on the panel
+        // (the panel stops bubbling events, which used to swallow this and leave it stuck to the cursor)
+        window.addEventListener('mouseup', function () { dragging = false; }, true);
       })();
       btnCollapse.addEventListener('click', function () { root.classList.toggle('kx-collapsed'); });
       function hidePanel(h) { root.classList.toggle('kx-hidden', h); tab.classList.toggle('show', h); }
       btnHide.addEventListener('click', function () { hidePanel(true); });
+      // shut it down: hand the game back its normal camera and remove all KinCam UI
+      function shutdownPanel() {
+        try { call('__kintaraCameraMode', 'iso'); } catch (e) {}
+        window.__kintaraPanelMounted = false;
+        [root, tab, recBadge, toastEl, nameCss, style].forEach(function (n) { try { if (n && n.parentNode) n.parentNode.removeChild(n); } catch (e) {} });
+      }
+      btnClose.addEventListener('click', shutdownPanel);
       tab.addEventListener('click', function () { hidePanel(false); });
       window.addEventListener('keydown', function (e) {
         if (e.key === 'h' || e.key === 'H') {
