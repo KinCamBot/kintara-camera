@@ -63,7 +63,7 @@ for your seed phrase, private keys, or password.
 
 These are the real mitigations for the auto-update risk. Keep them all true:
 
-- [ ] **2FA** enabled on the `KinCamBot` GitHub account (the top attack vector: account compromise).
+- [x] **2FA** enabled on the `KinCamBot` GitHub account (the top attack vector: account compromise).
 - [ ] **Branch protection** on the branch GitHub Pages serves from: require pull requests, require
       review, and disallow force-pushes.
 - [ ] **Signed, annotated release tags** (`git tag -s vX.Y.Z`).
