@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         KinCam Cinematic Camera
 // @namespace    gg.kincam.camera
-// @version      1.1.0
+// @version      1.1.1
 // @description  First-person, free-cam photos, over-the-shoulder, and cinematic HYPE reels for Kintara, with an in-game control panel.
 // @author       KinCam
-// @match        https://kintara.gg/*
+// @match        https://kintara.gg/play*
 // @run-at       document-start
 // @grant        none
 // @downloadURL  https://kincambot.github.io/kintara-camera/kintara-camera.user.js
@@ -1201,12 +1201,19 @@
       })();
       btnCollapse.addEventListener('click', function () { root.classList.toggle('kx-collapsed'); });
       function hidePanel(h) { root.classList.toggle('kx-hidden', h); tab.classList.toggle('show', h); }
+      // Toolbar-icon (extension popup) on/off hooks: fully hide BOTH the panel and its tab, and
+      // remember the choice so it stays that way across reloads until shown again.
+      window.__kxPanelShow = function () { try { localStorage.removeItem('kxHidden'); } catch (e) {} root.style.display = ''; tab.style.display = ''; root.classList.remove('kx-hidden'); };
+      window.__kxPanelHide = function () { try { localStorage.setItem('kxHidden', '1'); } catch (e) {} root.style.display = 'none'; tab.style.display = 'none'; };
+      window.__kxPanelVisible = function () { return root.style.display !== 'none'; };
+      try { if (localStorage.getItem('kxHidden') === '1') { root.style.display = 'none'; tab.style.display = 'none'; } } catch (e) {}
       btnHide.addEventListener('click', function () { hidePanel(true); });
-      // shut it down: hand the game back its normal camera and remove all KinCam UI
+      // shut it down: hand the game back its normal camera and HIDE the panel (does not destroy
+      // it, so the toolbar "Show KinCam" button can always bring it back).
       function shutdownPanel() {
         try { call('__kintaraCameraMode', 'iso'); } catch (e) {}
-        window.__kintaraPanelMounted = false;
-        [root, tab, recBadge, toastEl, nameCss, style].forEach(function (n) { try { if (n && n.parentNode) n.parentNode.removeChild(n); } catch (e) {} });
+        if (typeof window.__kxPanelHide === 'function') window.__kxPanelHide();
+        else { root.style.display = 'none'; tab.style.display = 'none'; }
       }
       btnClose.addEventListener('click', shutdownPanel);
       tab.addEventListener('click', function () { hidePanel(false); });
