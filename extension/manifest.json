@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "KinCam Cinematic Camera",
+  "version": "1.4.1",
+  "description": "First-person, free-cam photos, over-the-shoulder, and cinematic HYPE reels for Kintara.",
+  "host_permissions": [
+    "https://kintara.gg/*"
+  ],
+  "permissions": [
+    "declarativeNetRequest",
+    "scripting"
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "KinCam",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "kx_block",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://kintara.gg/play*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ]
+}
